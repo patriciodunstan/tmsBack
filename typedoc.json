@@ -1,0 +1,28 @@
+{
+    "entryPoints": [
+        "./src"
+    ],
+    "out": "docs",
+    "exclude": [
+        "**/*.spec.ts",
+        "**/*.test.ts"
+    ],
+    "theme": "default",
+    "name": "TMS Documentation",
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeExternals": true,
+    "includeVersion": true,
+    "hideGenerator": true,
+    "categorizeByGroup": true,
+    "categoryOrder": [
+        "Authentication",
+        "Users",
+        "Clients",
+        "Packages",
+        "Orders",
+        "Transporters",
+        "Vehicles",
+        "Zones"
+    ]
+}

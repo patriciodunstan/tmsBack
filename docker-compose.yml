@@ -1,0 +1,42 @@
+services:
+  tms-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tms-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - tms-mysql
+    environment:
+      - NODE_ENV=development
+      - DATABASE_HOST=tms-mysql
+      - DATABASE_PORT=3306
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=tms_db
+    networks:
+      - tms-network
+
+  tms-mysql:
+    image: mysql:8.0
+    container_name: tms-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=tms_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - tms-network
+
+networks:
+  tms-network:
+    driver: bridge
+
+volumes:
+  mysql_data: 
