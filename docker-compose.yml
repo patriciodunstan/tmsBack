@@ -5,12 +5,13 @@ services:
       dockerfile: Dockerfile
     container_name: tms-backend
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
-      - tms-mysql
+      tms-mysql:
+        condition: service_healthy
     environment:
       - NODE_ENV=development
       - DATABASE_HOST=tms-mysql
@@ -18,25 +19,38 @@ services:
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
       - DATABASE_NAME=tms_db
+      - JWT_SECRET=your_jwt_secret_key_here
     networks:
       - tms-network
+    restart: unless-stopped
 
   tms-mysql:
     image: mysql:8.0
     container_name: tms-mysql
     ports:
-      - "3307:3306"
+      - '3307:3306'
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=tms_db
+      - MYSQL_USER=tms_user
+      - MYSQL_PASSWORD=tms_password
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test:
+        ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot']
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - tms-network
+    restart: unless-stopped
 
 networks:
   tms-network:
     driver: bridge
 
 volumes:
-  mysql_data: 
+  mysql_data:

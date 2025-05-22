@@ -2,14 +2,25 @@ FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
+# Instalar dependencias de desarrollo necesarias
+RUN apk add --no-cache python3 make g++
+
+# Copiar archivos de dependencias
 COPY package*.json ./
+COPY pnpm-lock.yaml ./
 
-RUN npm install
+# Instalar pnpm y dependencias
+RUN npm install -g pnpm
+RUN pnpm install
 
+# Copiar el resto del código
 COPY . .
 
-RUN npm run build
+# Construir la aplicación
+RUN pnpm run build
 
+# Exponer el puerto
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"] 
+# Comando para desarrollo
+CMD ["pnpm", "run", "start:dev"] 
