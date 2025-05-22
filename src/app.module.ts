@@ -5,8 +5,13 @@ import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UserActivity } from './users/entities/user-activity.entity';
 
+/**
+ * Módulo principal de la aplicación.
+ * Configura la conexión a la base de datos y carga los módulos de usuarios y autenticación.
+ */
 @Module({
   imports: [
+    // Configuración de TypeORM para conectarse a MySQL
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'tms-mysql',

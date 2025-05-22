@@ -7,8 +7,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
+/**
+ * Servicio encargado de la gestión de usuarios y sus operaciones principales.
+ */
 @Injectable()
 export class UsersService {
   constructor(
@@ -16,8 +19,12 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(UserActivity)
     private activityRepository: Repository<UserActivity>,
-  ) {}
+  ) { }
 
+  /**
+   * Crea un nuevo usuario, validando que el RUT y el correo no existan previamente.
+   * @param createUserDto Datos del usuario a crear
+   */
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const existingUserByRut = await this.usersRepository.findOne({
       where: { rut: createUserDto.rut },
@@ -38,16 +45,23 @@ export class UsersService {
       ...createUserDto,
       password: hashedPassword,
     });
-    
+
     const savedUser = await this.usersRepository.save(user);
     await this.logActivity(savedUser, 'CREATE', 'User created');
     return savedUser;
   }
 
+  /**
+   * Obtiene todos los usuarios registrados.
+   */
   async findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
+  /**
+   * Busca un usuario por su RUT.
+   * @param rut RUT del usuario
+   */
   async findByRut(rut: string): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { rut },
@@ -58,6 +72,10 @@ export class UsersService {
     return user;
   }
 
+  /**
+   * Busca un usuario por su correo electrónico.
+   * @param email Correo electrónico
+   */
   async findByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { email },
@@ -68,6 +86,11 @@ export class UsersService {
     return user;
   }
 
+  /**
+   * Actualiza los datos de un usuario por su RUT.
+   * @param rut RUT del usuario
+   * @param updateUserDto Datos a actualizar
+   */
   async update(rut: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findByRut(rut);
     Object.assign(user, updateUserDto);
@@ -76,6 +99,10 @@ export class UsersService {
     return updatedUser;
   }
 
+  /**
+   * Elimina un usuario por su RUT.
+   * @param rut RUT del usuario
+   */
   async remove(rut: string): Promise<void> {
     const user = await this.findByRut(rut);
     const result = await this.usersRepository.delete(rut);
@@ -85,6 +112,11 @@ export class UsersService {
     await this.logActivity(user, 'DELETE', 'User deleted');
   }
 
+  /**
+   * Resetea la contraseña de un usuario.
+   * @param rut RUT del usuario
+   * @param resetPasswordDto Nueva contraseña
+   */
   async resetPassword(rut: string, resetPasswordDto: ResetPasswordDto): Promise<void> {
     const user = await this.findByRut(rut);
     const hashedPassword = await bcrypt.hash(resetPasswordDto.newPassword, 10);
@@ -93,10 +125,15 @@ export class UsersService {
     await this.logActivity(user, 'RESET_PASSWORD', 'Contraseña reseteada');
   }
 
+  /**
+   * Cambia la contraseña de un usuario, validando la contraseña actual.
+   * @param rut RUT del usuario
+   * @param changePasswordDto Contraseñas actual y nueva
+   */
   async changePassword(rut: string, changePasswordDto: ChangePasswordDto): Promise<void> {
     const user = await this.findByRut(rut);
     const isPasswordValid = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
-    
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Contraseña actual incorrecta');
     }
@@ -107,6 +144,10 @@ export class UsersService {
     await this.logActivity(user, 'CHANGE_PASSWORD', 'Contraseña cambiada');
   }
 
+  /**
+   * Activa un usuario por su RUT.
+   * @param rut RUT del usuario
+   */
   async activateUser(rut: string): Promise<User> {
     const user = await this.findByRut(rut);
     user.active = true;
@@ -115,6 +156,10 @@ export class UsersService {
     return updatedUser;
   }
 
+  /**
+   * Desactiva un usuario por su RUT.
+   * @param rut RUT del usuario
+   */
   async deactivateUser(rut: string): Promise<User> {
     const user = await this.findByRut(rut);
     user.active = false;
@@ -123,6 +168,12 @@ export class UsersService {
     return updatedUser;
   }
 
+  /**
+   * Registra una actividad realizada por un usuario.
+   * @param user Usuario
+   * @param action Acción realizada
+   * @param details Detalles de la acción
+   */
   private async logActivity(user: User, action: string, details: string): Promise<void> {
     const activity = this.activityRepository.create({
       user,

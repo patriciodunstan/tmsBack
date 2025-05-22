@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -5,7 +6,8 @@ import { UsersService } from './users.service';
 import { User, UserRole } from './entities/user.entity';
 import { UserActivity } from './entities/user-activity.entity';
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -83,7 +85,7 @@ describe('UsersService', () => {
           rut: '12345678-9',
           email: 'test@example.com',
           password: 'password123',
-        } as any)
+        } as CreateUserDto)
       ).rejects.toThrow(ConflictException);
     });
 
@@ -97,7 +99,7 @@ describe('UsersService', () => {
           rut: '12345678-9',
           email: 'test@example.com',
           password: 'password123',
-        } as any)
+        } as CreateUserDto)
       ).rejects.toThrow(ConflictException);
     });
   });
@@ -142,7 +144,7 @@ describe('UsersService', () => {
       mockActivityRepository.create.mockReturnValue({});
       mockActivityRepository.save.mockResolvedValue({});
 
-      const result = await service.update('12345678-9', { name: 'Updated' } as any);
+      const result = await service.update('12345678-9', { name: 'Updated' } as UpdateUserDto);
       expect(result.name).toBe('Updated');
     });
   });

@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -57,8 +58,8 @@ describe('AuthService', () => {
 
       const result = await service.validateUser('test@example.com', 'password123');
       expect(result).toBeDefined();
-      expect(result.password).toBeUndefined();
-      expect(result.email).toBe(mockUser.email);
+      expect(result!.password).toBeUndefined();
+      expect(result!.email).toBe(mockUser.email);
     });
 
     it('should return null when credentials are invalid', async () => {

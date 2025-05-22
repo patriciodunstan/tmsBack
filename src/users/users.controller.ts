@@ -14,9 +14,16 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('users')
 @Controller('users')
+/**
+ * Controlador encargado de la gestión de usuarios.
+ */
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
+  /**
+   * Crea un nuevo usuario.
+   * @param createUserDto Datos del usuario a crear
+   */
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario creado exitosamente' })
@@ -25,6 +32,9 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
+  /**
+   * Obtiene todos los usuarios registrados.
+   */
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios obtenida exitosamente' })
@@ -32,6 +42,10 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  /**
+   * Obtiene un usuario por su RUT.
+   * @param rut RUT del usuario
+   */
   @Get(':rut')
   @ApiOperation({ summary: 'Obtener un usuario por RUT' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado exitosamente' })
@@ -40,6 +54,11 @@ export class UsersController {
     return this.usersService.findByRut(rut);
   }
 
+  /**
+   * Actualiza los datos de un usuario por su RUT.
+   * @param rut RUT del usuario
+   * @param updateUserDto Datos a actualizar
+   */
   @Patch(':rut')
   @ApiOperation({ summary: 'Actualizar un usuario' })
   @ApiResponse({ status: 200, description: 'Usuario actualizado exitosamente' })
@@ -48,11 +67,19 @@ export class UsersController {
     return this.usersService.update(rut, updateUserDto);
   }
 
+  /**
+   * Desactiva un usuario por su RUT.
+   * @param rut RUT del usuario
+   */
   @Patch(':rut/desactivar')
-    desactivate(@Param('rut') rut: string) {
-      return this.usersService.update(rut, { active: false });
-    }
+  desactivate(@Param('rut') rut: string) {
+    return this.usersService.update(rut, { active: false });
+  }
 
+  /**
+   * Elimina un usuario por su RUT.
+   * @param rut RUT del usuario
+   */
   @Delete(':rut')
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente' })

@@ -9,6 +9,10 @@ import { AuthService } from './auth.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
+/**
+ * Módulo de autenticación.
+ * Configura JWT, Passport y los servicios necesarios para la autenticación.
+ */
 @Module({
   imports: [
     UsersModule,
@@ -22,4 +26,4 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

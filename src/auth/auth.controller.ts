@@ -7,9 +7,16 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
+/**
+ * Controlador encargado de la autenticación de usuarios.
+ */
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
+  /**
+   * Endpoint para iniciar sesión.
+   * Requiere credenciales válidas y retorna un token JWT si son correctas.
+   */
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiOperation({ summary: 'Login user' })
@@ -19,6 +26,10 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  /**
+   * Endpoint para obtener el perfil del usuario autenticado.
+   * Requiere un token JWT válido.
+   */
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiOperation({ summary: 'Get user profile' })

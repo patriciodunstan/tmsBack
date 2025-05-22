@@ -1,77 +1,93 @@
+# TMS Backend
 
+Sistema de gestión de transporte (TMS) desarrollado con NestJS, TypeScript y MySQL. Este backend provee autenticación, gestión de usuarios y registro de actividades, todo orquestado mediante Docker.
 
-## Description
+## Descripción
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Este proyecto implementa una API RESTful para la gestión de usuarios y autenticación, ideal para sistemas de transporte o logística. Incluye:
 
-## Project setup
+- Autenticación con JWT
+- Gestión de usuarios (CRUD, activación/desactivación, cambio de contraseña)
+- Registro de actividades de usuario
+- Documentación automática con Swagger y TypeDoc
+- Despliegue sencillo con Docker y Docker Compose
 
-```bash
-$ pnpm install
-```
+## Arquitectura
 
-## Compile and run the project
+- **NestJS** como framework principal
+- **TypeORM** para la gestión de la base de datos MySQL
+- **Swagger** para documentación interactiva de la API
+- **TypeDoc** para documentación técnica del código
+- **Docker** y **docker-compose** para orquestación de servicios
 
-```bash
-# development
-$ pnpm run start
+## Requisitos previos
 
-# watch mode
-$ pnpm run start:dev
+- Docker y Docker Compose instalados
+- pnpm (opcional, para desarrollo local)
 
-# production mode
-$ pnpm run start:prod
-```
+## Variables de entorno
 
-## Run tests
+Las variables principales ya están definidas en `docker-compose.yml`:
 
-```bash
-# unit tests
-$ pnpm run test
+- `DATABASE_HOST`
+- `DATABASE_PORT`
+- `DATABASE_USER`
+- `DATABASE_PASSWORD`
+- `DATABASE_NAME`
+- `JWT_SECRET` (puedes definirla para producción)
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Uso rápido con Docker
 
 ```bash
-$ pnpm install -g mau
-$ mau deploy
+docker-compose up --build
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Esto levantará dos servicios:
 
-## Resources
+- **tms-backend**: API en http://localhost:3000
+- **tms-mysql**: Base de datos MySQL en el puerto 3307
 
-Check out a few resources that may come in handy when working with NestJS:
+## Documentación de la API
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Una vez levantado el backend, accede a la documentación interactiva en:
 
-## Support
+- [http://localhost:3000/openapi](http://localhost:3000/openapi)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Generar documentación técnica
 
-## Stay in touch
+Para generar la documentación técnica del código fuente (TypeDoc):
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+pnpm install
+pnpm run docs
+```
 
-## License
+La documentación se generará en la carpeta `docs`.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Endpoints principales
+
+### Autenticación
+
+- `POST /auth/login`: Iniciar sesión (requiere email y contraseña)
+- `GET /auth/profile`: Obtener perfil del usuario autenticado (requiere JWT)
+
+### Usuarios
+
+- `POST /users`: Crear usuario
+- `GET /users`: Listar todos los usuarios
+- `GET /users/:rut`: Obtener usuario por RUT
+- `PATCH /users/:rut`: Actualizar usuario
+- `PATCH /users/:rut/desactivar`: Desactivar usuario
+- `DELETE /users/:rut`: Eliminar usuario
+
+## Scripts útiles
+
+- `pnpm run start`: Iniciar en modo desarrollo
+- `pnpm run start:dev`: Iniciar con recarga automática
+- `pnpm run start:prod`: Iniciar en modo producción
+- `pnpm run test`: Ejecutar tests
+- `pnpm run docs`: Generar documentación técnica
+
+## Licencia
+
+MIT
