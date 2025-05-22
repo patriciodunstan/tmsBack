@@ -144,7 +144,7 @@ describe('UsersService', () => {
       mockActivityRepository.create.mockReturnValue({});
       mockActivityRepository.save.mockResolvedValue({});
 
-      const result = await service.update('12345678-9', { name: 'Updated' } as UpdateUserDto);
+      const result = await service.updateUser('12345678-9', { name: 'Updated' } as UpdateUserDto);
       expect(result.name).toBe('Updated');
     });
   });
@@ -183,14 +183,14 @@ describe('UsersService', () => {
       mockActivityRepository.create.mockReturnValue({});
       mockActivityRepository.save.mockResolvedValue({});
 
-      await expect(service.remove('12345678-9')).resolves.toBeUndefined();
+      await expect(service.removeUser('12345678-9')).resolves.toBeUndefined();
     });
 
     it('should throw NotFoundException if user not found', async () => {
       mockUsersRepository.findOne.mockResolvedValue({ id: 1, rut: '12345678-9' });
       mockUsersRepository.delete.mockResolvedValue({ affected: 0 });
 
-      await expect(service.remove('12345678-9')).rejects.toThrow(NotFoundException);
+      await expect(service.removeUser('12345678-9')).rejects.toThrow(NotFoundException);
     });
   });
 });

@@ -91,7 +91,7 @@ export class UsersService {
    * @param rut RUT del usuario
    * @param updateUserDto Datos a actualizar
    */
-  async update(rut: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async updateUser(rut: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findByRut(rut);
     Object.assign(user, updateUserDto);
     const updatedUser = await this.usersRepository.save(user);
@@ -103,7 +103,7 @@ export class UsersService {
    * Elimina un usuario por su RUT.
    * @param rut RUT del usuario
    */
-  async remove(rut: string): Promise<void> {
+  async removeUser(rut: string): Promise<void> {
     const user = await this.findByRut(rut);
     const result = await this.usersRepository.delete(rut);
     if (result.affected === 0) {

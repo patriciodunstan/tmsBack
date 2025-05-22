@@ -11,8 +11,9 @@ describe('UsersController', () => {
     createUser: jest.fn(),
     findAll: jest.fn(),
     findByRut: jest.fn(),
-    update: jest.fn(),
-    remove: jest.fn(),
+    updateUser: jest.fn(),
+    removeUser: jest.fn(),
+    deactivateUser: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -54,7 +55,7 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockResolvedValue(mockUser);
 
-      const result = await controller.create(createUserDto);
+      const result = await controller.createUser(createUserDto);
 
       expect(result).toEqual(mockUser);
       expect(usersService.createUser).toHaveBeenCalledWith(createUserDto);
@@ -82,7 +83,7 @@ describe('UsersController', () => {
 
       mockUsersService.findAll.mockResolvedValue(mockUsers);
 
-      const result = await controller.findAll();
+      const result = await controller.findAllUser();
 
       expect(result).toEqual(mockUsers);
       expect(usersService.findAll).toHaveBeenCalled();
@@ -101,7 +102,7 @@ describe('UsersController', () => {
 
       mockUsersService.findByRut.mockResolvedValue(mockUser);
 
-      const result = await controller.findOne('12345678-9');
+      const result = await controller.findByRut('12345678-9');
 
       expect(result).toEqual(mockUser);
       expect(usersService.findByRut).toHaveBeenCalledWith('12345678-9');
@@ -122,22 +123,22 @@ describe('UsersController', () => {
         active: true,
       };
 
-      mockUsersService.update.mockResolvedValue(mockUser);
+      mockUsersService.updateUser.mockResolvedValue(mockUser);
 
-      const result = await controller.update('12345678-9', updateUserDto);
+      const result = await controller.updateUser('12345678-9', updateUserDto);
 
       expect(result).toEqual(mockUser);
-      expect(usersService.update).toHaveBeenCalledWith('12345678-9', updateUserDto);
+      expect(usersService.updateUser).toHaveBeenCalledWith('12345678-9', updateUserDto);
     });
   });
 
   describe('remove', () => {
     it('should remove a user', async () => {
-      mockUsersService.remove.mockResolvedValue(undefined);
+      mockUsersService.removeUser.mockResolvedValue(undefined);
 
-      await controller.remove('12345678-9');
+      await controller.removeUser('12345678-9');
 
-      expect(usersService.remove).toHaveBeenCalledWith('12345678-9');
+      expect(usersService.removeUser).toHaveBeenCalledWith('12345678-9');
     });
   });
 
@@ -151,12 +152,12 @@ describe('UsersController', () => {
         active: false,
       };
 
-      mockUsersService.update.mockResolvedValue(mockUser);
+      mockUsersService.deactivateUser.mockResolvedValue(mockUser);
 
-      const result = await controller.desactivate('12345678-9');
+      const result = await controller.desactivateUser('12345678-9');
 
       expect(result).toEqual(mockUser);
-      expect(usersService.update).toHaveBeenCalledWith('12345678-9', { active: false });
+      expect(usersService.deactivateUser).toHaveBeenCalledWith('12345678-9');
     });
   });
 });

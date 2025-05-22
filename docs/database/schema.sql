@@ -1,15 +1,22 @@
+-- Script de inicialización del esquema
+-- Este script se ejecuta automáticamente al iniciar el contenedor de MySQL
+
+-- Asegurarse de que estamos usando la base de datos correcta
+USE tms_db;
+
 -- ========================
 -- Tabla: users
 -- ========================
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'logistico', 'bodega') NOT NULL,
-    activo BOOLEAN DEFAULT TRUE,
-    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    user_name VARCHAR(100) NOT NULL,
+    user_rut VARCHAR(20) NOT NULL UNIQUE,
+    user_email VARCHAR(150) NOT NULL UNIQUE,
+    user_password VARCHAR(255) NOT NULL,
+    user_role ENUM('admin', 'logistico', 'bodega') NOT NULL,
+    user_active BOOLEAN DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- ========================
@@ -17,72 +24,73 @@ CREATE TABLE users (
 -- ========================
 CREATE TABLE clients (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    rut VARCHAR(20) NOT NULL UNIQUE,
-    email VARCHAR(150),
-    telefono VARCHAR(20),
-    direccion VARCHAR(255),
-    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    client_name VARCHAR(100) NOT NULL,
+    client_rut VARCHAR(20) NOT NULL UNIQUE,
+    client_email VARCHAR(150),
+    client_phone VARCHAR(20),
+    client_address VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- ========================
--- Tabla: transportistas
+-- Tabla: carriers
 -- ========================
-CREATE TABLE transportistas (
+CREATE TABLE carriers (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    rut VARCHAR(20) NOT NULL UNIQUE,
-    email VARCHAR(150),
-    telefono VARCHAR(20),
-    direccion VARCHAR(255),
-    activo BOOLEAN DEFAULT TRUE,
-    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    carrier_name VARCHAR(100) NOT NULL,
+    carrier_rut VARCHAR(20) NOT NULL UNIQUE,
+    carrier_email VARCHAR(150),
+    carrier_phone VARCHAR(20),
+    carrier_address VARCHAR(255),
+    carrier_active BOOLEAN DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- ========================
--- Tabla: zonas
+-- Tabla: zones
 -- ========================
 CREATE TABLE zones (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL UNIQUE,
-    descripcion TEXT,
-    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    zone_name VARCHAR(100) NOT NULL UNIQUE,
+    zone_description TEXT,
+    zone_active BOOLEAN DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- ========================
--- Tabla: vehiculos
+-- Tabla: vehicles
 -- ========================
-CREATE TABLE vehiculos (
+CREATE TABLE vehicles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    patente VARCHAR(20) NOT NULL UNIQUE,
-    tipo ENUM('camioneta', 'camion', 'furgon', 'moto') NOT NULL,
-    capacidad DECIMAL(10,2) NOT NULL,
-    transportista_id INT NOT NULL,
-    zona_id INT,
-    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    vehicle_plate VARCHAR(20) NOT NULL UNIQUE,
+    vehicle_type ENUM('van', 'truck', 'pickup', 'motorcycle') NOT NULL,
+    vehicle_capacity DECIMAL(10,2) NOT NULL,
+    carrier_id INT NOT NULL,
+    zone_id INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_vehiculo_transportista FOREIGN KEY (transportista_id) REFERENCES transportistas(id) ON DELETE CASCADE,
-    CONSTRAINT fk_vehiculo_zona FOREIGN KEY (zona_id) REFERENCES zones(id) ON DELETE SET NULL
+    CONSTRAINT fk_vehicle_carrier FOREIGN KEY (carrier_id) REFERENCES carriers(id) ON DELETE CASCADE,
+    CONSTRAINT fk_vehicle_zone FOREIGN KEY (zone_id) REFERENCES zones(id) ON DELETE SET NULL
 );
 
 -- ========================
--- Tabla: orders (órdenes de carga)
+-- Tabla: orders
 -- ========================
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    fecha DATE NOT NULL,
-    estado ENUM('pendiente', 'en_ruta', 'completada', 'cancelada') DEFAULT 'pendiente',
-    transportista_id INT,
-    vehiculo_id INT,
-    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    order_date DATE NOT NULL,
+    order_status ENUM('pending', 'in_route', 'completed', 'cancelled') DEFAULT 'pending',
+    carrier_id INT,
+    vehicle_id INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_order_transportista FOREIGN KEY (transportista_id) REFERENCES transportistas(id) ON DELETE SET NULL,
-    CONSTRAINT fk_order_vehiculo FOREIGN KEY (vehiculo_id) REFERENCES vehiculos(id) ON DELETE SET NULL
+    CONSTRAINT fk_order_carrier FOREIGN KEY (carrier_id) REFERENCES carriers(id) ON DELETE SET NULL,
+    CONSTRAINT fk_order_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE SET NULL
 );
 
 -- ========================
@@ -91,26 +99,26 @@ CREATE TABLE orders (
 CREATE TABLE packages (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
-    alto DECIMAL(10, 2) NOT NULL,
-    ancho DECIMAL(10, 2) NOT NULL,
-    largo DECIMAL(10, 2) NOT NULL,
-    peso DECIMAL(10, 2) NOT NULL,
-    valor_declarado DECIMAL(15, 2) NOT NULL,
+    package_height DECIMAL(10, 2) NOT NULL,
+    package_width DECIMAL(10, 2) NOT NULL,
+    package_length DECIMAL(10, 2) NOT NULL,
+    package_weight DECIMAL(10, 2) NOT NULL,
+    package_declared_value DECIMAL(15, 2) NOT NULL,
 
-    direccion_retiro VARCHAR(255) NOT NULL,
-    direccion_entrega VARCHAR(255) NOT NULL,
-    fecha_retiro DATE NOT NULL,
+    package_pickup_address VARCHAR(255) NOT NULL,
+    package_delivery_address VARCHAR(255) NOT NULL,
+    package_pickup_date DATE NOT NULL,
 
-    estado ENUM('pendiente', 'asignado', 'retirado', 'entregado') DEFAULT 'pendiente',
+    package_status ENUM('pending', 'assigned', 'picked_up', 'delivered') DEFAULT 'pending',
 
-    cliente_id INT NOT NULL,
-    zona_id INT,
-    orden_id INT,
+    client_id INT NOT NULL,
+    zone_id INT,
+    order_id INT,
 
-    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
-    actualizado_en DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_package_cliente FOREIGN KEY (cliente_id) REFERENCES clients(id) ON DELETE CASCADE,
-    CONSTRAINT fk_package_zona FOREIGN KEY (zona_id) REFERENCES zones(id) ON DELETE SET NULL,
-    CONSTRAINT fk_package_orden FOREIGN KEY (orden_id) REFERENCES orders(id) ON DELETE SET NULL
+    CONSTRAINT fk_package_client FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    CONSTRAINT fk_package_zone FOREIGN KEY (zone_id) REFERENCES zones(id) ON DELETE SET NULL,
+    CONSTRAINT fk_package_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL
 );

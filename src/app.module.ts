@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UserActivity } from './users/entities/user-activity.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ZonesModule } from './zones/zones.module';
+import { ClientsModule } from './clients/clients.module';
 
 /**
  * Módulo principal de la aplicación.
@@ -11,19 +14,30 @@ import { UserActivity } from './users/entities/user-activity.entity';
  */
 @Module({
   imports: [
+    // Configuración de variables de entorno
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     // Configuración de TypeORM para conectarse a MySQL
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'tms-mysql',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'tms_db',
-      entities: [User, UserActivity],
-      synchronize: true
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('DATABASE_HOST'),
+        port: configService.get('DATABASE_PORT'),
+        username: configService.get('DATABASE_USER'),
+        password: configService.get('DATABASE_PASSWORD'),
+        database: configService.get('DATABASE_NAME'),
+        entities: [User, UserActivity],
+        synchronize: configService.get('NODE_ENV') === 'development',
+      }),
+      inject: [ConfigService],
     }),
     UsersModule,
-    AuthModule],
+    AuthModule,
+    ZonesModule,
+    ClientsModule
+  ],
   controllers: [],
   providers: [],
 })

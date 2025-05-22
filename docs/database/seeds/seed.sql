@@ -1,47 +1,67 @@
--- Insertar usuarios
-INSERT INTO users (nombre, email, password, rol)
-VALUES 
-('Administrador General', 'admin@tms.cl', 'hashed_password_123', 'admin'),
-('Logístico Central', 'logistica@tms.cl', 'hashed_password_456', 'logistico'),
-('Bodega Principal', 'bodega@tms.cl', 'hashed_password_789', 'bodega');
+-- Script de datos iniciales
+-- Este script se ejecuta automáticamente después del schema
 
--- Insertar zonas
-INSERT INTO zones (nombre, descripcion)
-VALUES 
-('Zona Norte', 'Incluye comunas de la zona norte de Santiago'),
-('Zona Sur', 'Incluye comunas de la zona sur de Santiago'),
-('Zona Oriente', 'Incluye Las Condes, Vitacura, Lo Barnechea');
+-- Asegurarse de que estamos usando la base de datos correcta
+USE tms_db;
 
--- Insertar clientes
-INSERT INTO clients (nombre, rut, email, telefono, direccion)
-VALUES 
-('Empresa A', '76.123.456-1', 'contacto@empresaA.cl', '+56912345678', 'Av. Apoquindo 1234'),
-('Empresa B', '77.987.654-3', 'ventas@empresaB.cl', '+56987654321', 'Camino Melipilla 4321');
+-- ========================
+-- Datos de prueba: users
+-- ========================
+INSERT INTO users (user_name, user_rut, user_email, user_password, user_role) VALUES
+('General Administrator', '11.111.111-1', 'admin@tms.com', '$2b$10$8K1p/a0dR1x5M1K3K1K1K.1K1K1K1K1K1K1K1K1K1K1K1K1K1K1K1K', 'admin'),
+('Central Logistics', '22.222.222-2', 'logistics@tms.com', '$2b$10$8K1p/a0dR1x5M1K3K1K1K.1K1K1K1K1K1K1K1K1K1K1K1K1K1K1K1K', 'logistico'),
+('Main Warehouse', '33.333.333-3', 'warehouse@tms.com', '$2b$10$8K1p/a0dR1x5M1K3K1K1K.1K1K1K1K1K1K1K1K1K1K1K1K1K1K1K1K', 'bodega');
 
--- Insertar transportistas
-INSERT INTO transportistas (nombre, rut, email, telefono, direccion)
-VALUES 
-('Juan Transporte', '12.345.678-9', 'juan@transporte.cl', '+56911111111', 'El Parrón 456'),
-('María Cargo', '23.456.789-0', 'maria@cargo.cl', '+56922222222', 'La Florida 789');
+-- ========================
+-- Datos de prueba: zones
+-- ========================
+INSERT INTO zones (zone_name, zone_description) VALUES
+('North Zone', 'Coverage area for northern region'),
+('South Zone', 'Coverage area for southern region'),
+('East Zone', 'Coverage area for eastern region'),
+('West Zone', 'Coverage area for western region');
 
--- Insertar vehículos
-INSERT INTO vehiculos (patente, tipo, capacidad, transportista_id, zona_id)
-VALUES 
-('ABCD12', 'camioneta', 1500.00, 1, 1),
-('EFGH34', 'camion', 3000.00, 2, 2);
+-- ========================
+-- Datos de prueba: clients
+-- ========================
+INSERT INTO clients (client_name, client_rut, client_email, client_phone, client_address) VALUES
+('Retail Corp', '11.111.111-1', 'contact@retailcorp.com', '+56912345678', '123 Main St, Santiago'),
+('Tech Solutions', '22.222.222-2', 'info@techsolutions.com', '+56987654321', '456 Tech Ave, Santiago'),
+('Food Distributors', '33.333.333-3', 'sales@fooddist.com', '+56945678912', '789 Food St, Santiago');
 
--- Insertar órdenes de carga
-INSERT INTO orders (fecha, estado, transportista_id, vehiculo_id)
-VALUES 
-('2025-05-20', 'pendiente', 1, 1),
-('2025-05-21', 'pendiente', 2, 2);
+-- ========================
+-- Datos de prueba: carriers
+-- ========================
+INSERT INTO carriers (carrier_name, carrier_rut, carrier_email, carrier_phone, carrier_address) VALUES
+('Express Delivery', '44.444.444-4', 'contact@expressdelivery.com', '+56911111111', '111 Delivery St, Santiago'),
+('Fast Transport', '55.555.555-5', 'info@fasttransport.com', '+56922222222', '222 Transport Ave, Santiago'),
+('Quick Logistics', '66.666.666-6', 'support@quicklogistics.com', '+56933333333', '333 Logistics Rd, Santiago');
 
--- Insertar paquetes
+-- ========================
+-- Datos de prueba: vehicles
+-- ========================
+INSERT INTO vehicles (vehicle_plate, vehicle_type, vehicle_capacity, carrier_id, zone_id) VALUES
+('ABC123', 'van', 1000.00, 1, 1),
+('DEF456', 'truck', 2000.00, 1, 2),
+('GHI789', 'pickup', 500.00, 2, 3),
+('JKL012', 'motorcycle', 100.00, 3, 4);
+
+-- ========================
+-- Datos de prueba: orders
+-- ========================
+INSERT INTO orders (order_date, order_status, carrier_id, vehicle_id) VALUES
+('2024-03-20', 'pending', 1, 1),
+('2024-03-20', 'in_route', 2, 2),
+('2024-03-20', 'completed', 3, 3);
+
+-- ========================
+-- Datos de prueba: packages
+-- ========================
 INSERT INTO packages (
-    alto, ancho, largo, peso, valor_declarado,
-    direccion_retiro, direccion_entrega, fecha_retiro,
-    estado, cliente_id, zona_id, orden_id
-)
-VALUES 
-(30.5, 20.0, 40.0, 15.0, 100000, 'Sucursal Empresa A', 'Cliente 1, Ñuñoa', '2025-05-21', 'pendiente', 1, 1, 1),
-(25.0, 25.0, 25.0, 10.0, 50000, 'Sucursal Empresa B', 'Cliente 2, Puente Alto', '2025-05-22', 'pendiente', 2, 2, 2);
+    package_height, package_width, package_length, package_weight, package_declared_value,
+    package_pickup_address, package_delivery_address, package_pickup_date,
+    package_status, client_id, zone_id, order_id
+) VALUES
+(50.00, 30.00, 20.00, 5.00, 100000.00, '123 Pickup St', '456 Delivery Ave', '2024-03-20', 'pending', 1, 1, 1),
+(100.00, 60.00, 40.00, 10.00, 200000.00, '789 Pickup Rd', '012 Delivery St', '2024-03-20', 'assigned', 2, 2, 2),
+(25.00, 15.00, 10.00, 2.00, 50000.00, '345 Pickup Ave', '678 Delivery Rd', '2024-03-20', 'picked_up', 3, 3, 3);
