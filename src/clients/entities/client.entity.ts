@@ -1,35 +1,49 @@
-import { IsEmail, IsString } from "class-validator";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { IsEmail, IsString, IsOptional } from "class-validator";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Package } from "../../packages/entities/package.entity";
 
 @Entity('clients')
 export class Client {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: false })
+    @Column({ name: 'client_name', length: 100 })
     @IsString()
-    client_name: string;
+    name: string;
 
-    @Column({ nullable: false, unique: true })
+    @Column({ name: 'client_rut', length: 20, unique: true })
     @IsString()
-    client_rut: string;
+    rut: string;
 
-    @Column()
+    @Column({ name: 'client_email', length: 150 })
     @IsEmail()
-    cliente_email: string;
+    @IsOptional()
+    email: string;
 
-    @Column()
+    @Column({ name: 'client_phone', length: 20 })
     @IsString()
-    cliente_phone: string;
+    @IsOptional()
+    phone: string;
 
-    @Column()
+    @Column({ name: 'client_address', length: 255 })
     @IsString()
-    client_adress: string;
+    @IsOptional()
+    address: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @Column({ name: 'client_favorite_addresses', type: 'json', nullable: true })
+    @IsOptional()
+    favoriteAddresses: {
+        name: string;
+        address: string;
+        isDefault: boolean;
+    }[];
 
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt: Date;
 
-    @UpdateDateColumn()
-    update_at: Date;
+    @UpdateDateColumn({ name: 'updated_at' })
+    updatedAt: Date;
+
+    @OneToMany(() => Package, package => package.client)
+    packages: Package[];
 }

@@ -1,26 +1,70 @@
-import { Injectable } from '@nestjs/common';
-import { CreateClientDto } from './dto/create-client.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Client } from './entities/client.entity';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { Package } from '../packages/entities/package.entity';
 
 @Injectable()
 export class ClientsService {
-  create(createClientDto: CreateClientDto) {
-    return 'This action adds a new client';
+  constructor(
+    @InjectRepository(Client)
+    private clientsRepository: Repository<Client>,
+    @InjectRepository(Package)
+    private packagesRepository: Repository<Package>
+  ) { }
+
+  async findOne(id: number): Promise<Client> {
+    const client = await this.clientsRepository.findOne({ where: { id } });
+    if (!client) {
+      throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
+    }
+    return client;
   }
 
-  findAll() {
-    return `This action returns all clients`;
+  async update(id: number, updateClientDto: UpdateClientDto): Promise<Client> {
+    const client = await this.findOne(id);
+
+    // Actualizar datos básicos
+    Object.assign(client, updateClientDto);
+
+    // Si hay direcciones favoritas, asegurarse de que solo una sea default
+    if (updateClientDto.favoriteAddresses) {
+      const hasDefault = updateClientDto.favoriteAddresses.some(addr => addr.isDefault);
+      if (hasDefault) {
+        updateClientDto.favoriteAddresses = updateClientDto.favoriteAddresses.map(addr => ({
+          ...addr,
+          isDefault: addr.isDefault || false
+        }));
+      }
+    }
+
+    return this.clientsRepository.save(client);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async getClientPackages(id: number): Promise<Package[]> {
+    const client = await this.clientsRepository.findOne({
+      where: { id },
+      relations: ['packages']
+    });
+
+    if (!client) {
+      throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
+    }
+
+    return client.packages;
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
-  }
+  async getClientPackagesWithOrders(id: number): Promise<Package[]> {
+    const client = await this.clientsRepository.findOne({
+      where: { id },
+      relations: ['packages', 'packages.order']
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+    if (!client) {
+      throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
+    }
+
+    return client.packages;
   }
 }

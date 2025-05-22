@@ -59,7 +59,7 @@ describe('UsersService', () => {
         rut: '12345678-9',
         email: 'test@example.com',
         password: 'password123',
-        role: UserRole.CLIENT,
+        role: UserRole.LOGISTICO,
       };
 
       mockUsersRepository.findOne.mockResolvedValueOnce(null); // rut

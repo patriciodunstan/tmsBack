@@ -29,6 +29,7 @@ CREATE TABLE clients (
     client_email VARCHAR(150),
     client_phone VARCHAR(20),
     client_address VARCHAR(255),
+    client_favorite_addresses JSON,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

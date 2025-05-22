@@ -43,7 +43,7 @@ describe('UsersController', () => {
         rut: '12345678-9',
         email: 'test@example.com',
         password: 'password123',
-        role: UserRole.CLIENT,
+        role: UserRole.LOGISTICO,
       };
 
       const mockUser = {
@@ -69,14 +69,14 @@ describe('UsersController', () => {
           id: 1,
           name: 'Test User 1',
           rut: '12345678-9',
-          role: UserRole.CLIENT,
+          role: UserRole.BODEGA,
           active: true,
         },
         {
           id: 2,
           name: 'Test User 2',
           rut: '98765432-1',
-          role: UserRole.CLIENT,
+          role: UserRole.BODEGA,
           active: true,
         },
       ];
@@ -96,7 +96,7 @@ describe('UsersController', () => {
         id: 1,
         name: 'Test User',
         rut: '12345678-9',
-        role: UserRole.CLIENT,
+        role: UserRole.BODEGA,
         active: true,
       };
 
@@ -119,7 +119,7 @@ describe('UsersController', () => {
         id: 1,
         name: 'Updated User',
         rut: '12345678-9',
-        role: UserRole.CLIENT,
+        role: UserRole.ADMIN,
         active: true,
       };
 
@@ -148,7 +148,7 @@ describe('UsersController', () => {
         id: 1,
         name: 'Test User',
         rut: '12345678-9',
-        role: UserRole.CLIENT,
+        role: UserRole.LOGISTICO,
         active: false,
       };
 

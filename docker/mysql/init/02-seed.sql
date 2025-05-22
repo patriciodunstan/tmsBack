@@ -24,10 +24,13 @@ INSERT INTO zones (zone_name, zone_description) VALUES
 -- ========================
 -- Datos de prueba: clients
 -- ========================
-INSERT INTO clients (client_name, client_rut, client_email, client_phone, client_address) VALUES
-('Retail Corp', '11.111.111-1', 'contact@retailcorp.com', '+56912345678', '123 Main St, Santiago'),
-('Tech Solutions', '22.222.222-2', 'info@techsolutions.com', '+56987654321', '456 Tech Ave, Santiago'),
-('Food Distributors', '33.333.333-3', 'sales@fooddist.com', '+56945678912', '789 Food St, Santiago');
+INSERT INTO clients (client_name, client_rut, client_email, client_phone, client_address, client_favorite_addresses) VALUES
+('Retail Corp', '11.111.111-1', 'contact@retailcorp.com', '+56912345678', '123 Main St, Santiago', 
+'[{"name": "Oficina Central", "address": "123 Main St, Santiago", "isDefault": true}, {"name": "Bodega Norte", "address": "456 North Ave, Santiago", "isDefault": false}]'),
+('Tech Solutions', '22.222.222-2', 'info@techsolutions.com', '+56987654321', '456 Tech Ave, Santiago',
+'[{"name": "Sede Principal", "address": "456 Tech Ave, Santiago", "isDefault": true}, {"name": "Centro de Datos", "address": "789 Data St, Santiago", "isDefault": false}]'),
+('Food Distributors', '33.333.333-3', 'sales@fooddist.com', '+56945678912', '789 Food St, Santiago',
+'[{"name": "Almacén Central", "address": "789 Food St, Santiago", "isDefault": true}, {"name": "Punto de Distribución", "address": "321 Dist St, Santiago", "isDefault": false}]');
 
 -- ========================
 -- Datos de prueba: carriers
