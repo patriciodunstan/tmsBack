@@ -19,7 +19,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('openapi', app, document);
+  SwaggerModule.setup('api', app, document);
 
   // Inicia la aplicación en el puerto definido por la variable de entorno o 3000
   await app.listen(process.env.PORT ?? 3000);
