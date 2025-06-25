@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Zone } from './entities/zone.entity';
 import { CreateZoneDto } from './dto/create-zone.dto';
 import { UpdateZoneDto } from './dto/update-zone.dto';
+import { ZoneType } from './dto/zone-type.dto';
 
 @Injectable()
 export class ZonesService {
@@ -12,6 +13,15 @@ export class ZonesService {
     private zonesRepository: Repository<Zone>
   ) { }
 
+
+  private extractPostalCode(address: string): string | null {
+    const postalCodeMatch = address.match(/\b\d{5}\b/);
+    const match = address.match(/, ([^,]+),/);
+    if (!postalCodeMatch || !match) {
+      throw new Error('No se encontró un código postal válido');
+    }
+    return postalCodeMatch[0];
+  }
   /**
    * Crea una nueva zona
    * @param createZoneDto Datos para crear la zona
@@ -20,15 +30,52 @@ export class ZonesService {
    */
   async createZone(createZoneDto: CreateZoneDto): Promise<Zone> {
     const existingZone = await this.zonesRepository.findOne({
-      where: { zone_name: createZoneDto.zone_name }
+      where: { zoneName: createZoneDto.zone_name }
     });
 
     if (existingZone) {
       throw new ConflictException('Ya existe una zona con ese nombre');
     }
 
-    const zone = this.zonesRepository.create(createZoneDto);
+    const zone = this.zonesRepository.create({
+      zoneName: createZoneDto.zone_name,
+      zoneDescription: createZoneDto.zone_description,
+      zoneActive: true,
+      boundaries: {
+        postal_codes: []
+      }
+    });
     return this.zonesRepository.save(zone);
+  }
+
+  async findZoneByAddress(address: string): Promise<Zone | null> {
+    // Extraer el código postal de la dirección
+    const postalCode = this.extractPostalCode(address);
+    if (!postalCode) {
+      throw new NotFoundException(`No se encontró la zona con dirección ${address}`);
+    }
+    // Buscar una zona existente por código postal
+    const existingZone = await this.zonesRepository.findOne({
+      where: {
+        boundaries: {
+          postal_codes: ([postalCode])
+        }
+      }
+    })
+    // Si no existe, crear la zona
+    if (!existingZone) {
+      const newZone = this.zonesRepository.create({
+        zoneName: `Zona_${postalCode}`,
+        zoneDescription: `Zona de ${ZoneType} creada automáticamente para el código postal ${postalCode}`,
+        zoneActive: true,
+        boundaries: {
+          postal_codes: ([postalCode])
+        },
+        zoneAddress: address
+      });
+      return this.zonesRepository.save(newZone);
+    }
+    return existingZone;
   }
 
   /**
@@ -57,6 +104,7 @@ export class ZonesService {
     return zone;
   }
 
+
   /**
    * Actualiza una zona
    * @param id ID de la zona
@@ -70,7 +118,7 @@ export class ZonesService {
 
     if (updateZoneDto.zone_name) {
       const existingZone = await this.zonesRepository.findOne({
-        where: { zone_name: updateZoneDto.zone_name }
+        where: { zoneName: updateZoneDto.zone_name }
       });
 
       if (existingZone && existingZone.id !== id) {
@@ -90,7 +138,7 @@ export class ZonesService {
    */
   async toggleZoneStatus(id: number): Promise<Zone> {
     const zone = await this.findZoneById(id);
-    zone.zone_active = !zone.zone_active;
+    zone.zoneActive = !zone.zoneActive;
     return this.zonesRepository.save(zone);
   }
 

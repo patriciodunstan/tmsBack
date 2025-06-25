@@ -7,6 +7,11 @@ import { UserActivity } from './users/entities/user-activity.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ZonesModule } from './zones/zones.module';
 import { ClientsModule } from './clients/clients.module';
+import { PackageModule } from './package/package.module';
+import { OrdersModule } from './orders/orders.module';
+import { TransportistaModule } from './transportista/transportista.module';
+import { VehiclesModule } from './vehicles/vehicles.module';
+import { AuditLogsModule } from './audit_logs/audit_logs.module';
 
 /**
  * Módulo principal de la aplicación.
@@ -36,7 +41,12 @@ import { ClientsModule } from './clients/clients.module';
     UsersModule,
     AuthModule,
     ZonesModule,
-    ClientsModule
+    ClientsModule,
+    PackageModule,
+    OrdersModule,
+    TransportistaModule,
+    VehiclesModule,
+    AuditLogsModule
   ],
   controllers: [],
   providers: [],

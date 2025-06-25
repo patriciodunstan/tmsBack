@@ -1,6 +1,7 @@
 import { IsEmail, IsString, IsOptional } from "class-validator";
+import { Package } from "src/package/entities/package.entity";
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany } from "typeorm";
-import { Package } from "../../packages/entities/package.entity";
+
 
 @Entity('clients')
 export class Client {
@@ -44,6 +45,6 @@ export class Client {
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
-    @OneToMany(() => Package, package => package.client)
+    @OneToMany(() => Package, (pkg) => pkg.client)
     packages: Package[];
 }
