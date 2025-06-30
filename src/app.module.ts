@@ -12,6 +12,7 @@ import { OrdersModule } from './orders/orders.module';
 import { TransportistaModule } from './transportista/transportista.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { AuditLogsModule } from './audit_logs/audit_logs.module';
+import { RolsModule } from './rols/rols.module';
 
 /**
  * Módulo principal de la aplicación.
@@ -46,7 +47,8 @@ import { AuditLogsModule } from './audit_logs/audit_logs.module';
     OrdersModule,
     TransportistaModule,
     VehiclesModule,
-    AuditLogsModule
+    AuditLogsModule,
+    RolsModule
   ],
   controllers: [],
   providers: [],

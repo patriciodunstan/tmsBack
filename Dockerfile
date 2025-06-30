@@ -1,26 +1,37 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
 WORKDIR /usr/src/app
 
-# Instalar dependencias de desarrollo necesarias
-RUN apk add --no-cache python3 make g++
+RUN npm install -g pnpm
 
-# Copiar archivos de dependencias
 COPY package*.json ./
 COPY pnpm-lock.yaml ./
 
-# Instalar pnpm y dependencias
-RUN npm install -g pnpm
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
-# Copiar el resto del código
 COPY . .
 
-# Construir la aplicación
 RUN pnpm run build
 
-# Exponer el puerto
+FROM node:20-alpine AS production
+
+WORKDIR /usr/src/app
+
+RUN npm install -g pnpm
+
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+
+RUN pnpm install --frozen-lockfile --prod
+
+COPY --from=builder /usr/src/app/dist ./dist
+COPY healthcheck.ts ./
+
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
+RUN chown -R nestjs:nodejs /usr/src/app
+USER nestjs
+
 EXPOSE 3000
 
-# Comando para desarrollo
-CMD ["pnpm", "run", "start:dev"] 
+CMD ["node", "dist/main"]
