@@ -1,0 +1,59 @@
+services:
+  tms-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: tms-backend-dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      tms-mysql:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - tms-network
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+
+  tms-mysql:
+    image: mysql:8.0
+    container_name: tms-mysql-dev
+    ports:
+      - '3307:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+    volumes:
+      - mysql_data_dev:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p${DATABASE_PASSWORD}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tms-network
+    restart: unless-stopped
+
+networks:
+  tms-network:
+    driver: bridge
+
+volumes:
+  mysql_data_dev:

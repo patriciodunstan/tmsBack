@@ -3,7 +3,13 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { 
+  ApiTags, 
+  ApiOperation, 
+  ApiResponse, 
+  ApiBody, 
+  ApiBearerAuth 
+} from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -19,9 +25,29 @@ export class AuthController {
    */
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @ApiOperation({ summary: 'Login user' })
-  @ApiResponse({ status: 200, description: 'Login successful' })
-  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Login exitoso',
+    schema: {
+      type: 'object',
+      properties: {
+        access_token: { type: 'string', description: 'JWT token' },
+        user: { 
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            rut: { type: 'string' },
+            email: { type: 'string' },
+            role: { type: 'string', enum: ['ADMIN', 'LOGISTICO', 'BODEGA'] }
+          }
+        }
+      }
+    }
+  })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
+  @ApiResponse({ status: 400, description: 'Datos de entrada inválidos' })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
@@ -32,9 +58,25 @@ export class AuthController {
    */
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  @ApiOperation({ summary: 'Get user profile' })
-  @ApiResponse({ status: 200, description: 'Profile retrieved successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener perfil del usuario autenticado' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Perfil obtenido exitosamente',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number' },
+        rut: { type: 'string' },
+        email: { type: 'string' },
+        firstName: { type: 'string' },
+        lastName: { type: 'string' },
+        role: { type: 'string', enum: ['ADMIN', 'LOGISTICO', 'BODEGA'] },
+        active: { type: 'boolean' }
+      }
+    }
+  })
+  @ApiResponse({ status: 401, description: 'Token inválido o expirado' })
   getProfile(@Request() req) {
     return req.user;
   }

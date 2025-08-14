@@ -10,10 +10,17 @@ export class VehiclesService {
   constructor(
     @InjectRepository(Vehicle)
     private vehicleRepository: Repository<Vehicle>,
-  ) {}
+  ) { }
 
   async create(createVehicleDto: CreateVehicleDto): Promise<Vehicle> {
-    const vehicle = this.vehicleRepository.create(createVehicleDto);
+    const { transportista_id, zone_id, ...vehicleData } = createVehicleDto;
+    
+    const vehicle = this.vehicleRepository.create({
+      ...vehicleData,
+      transportista: { id: transportista_id } as any,
+      zone: zone_id ? { id: zone_id } as any : null,
+    });
+    
     return await this.vehicleRepository.save(vehicle);
   }
 
@@ -35,8 +42,17 @@ export class VehiclesService {
   }
 
   async update(id: number, updateVehicleDto: UpdateVehicleDto): Promise<Vehicle> {
+    const { transportista_id, zone_id, ...vehicleData } = updateVehicleDto;
     const vehicle = await this.findOne(id);
-    Object.assign(vehicle, updateVehicleDto);
+    
+    Object.assign(vehicle, vehicleData);
+    if (transportista_id) {
+      vehicle.transportista = { id: transportista_id } as any;
+    }
+    if (zone_id !== undefined) {
+      vehicle.zone = zone_id ? { id: zone_id } as any : null;
+    }
+    
     return await this.vehicleRepository.save(vehicle);
   }
 

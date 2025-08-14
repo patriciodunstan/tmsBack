@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Client } from './entities/client.entity';
+import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Package } from 'src/package/entities/package.entity';
-
 
 @Injectable()
 export class ClientsService {
@@ -14,6 +14,26 @@ export class ClientsService {
     @InjectRepository(Package)
     private packagesRepository: Repository<Package>
   ) { }
+
+  async create(createClientDto: CreateClientDto): Promise<Client> {
+    // Check if client with same email already exists
+    const existingClient = await this.clientsRepository.findOne({
+      where: { email: createClientDto.email }
+    });
+
+    if (existingClient) {
+      throw new ConflictException('Client with this email already exists');
+    }
+
+    const client = this.clientsRepository.create(createClientDto);
+    return await this.clientsRepository.save(client);
+  }
+
+  async findAll(): Promise<Client[]> {
+    return await this.clientsRepository.find({
+      relations: ['packages']
+    });
+  }
 
   async findOne(id: number): Promise<Client> {
     const client = await this.clientsRepository.findOne({ where: { id } });
@@ -67,5 +87,10 @@ export class ClientsService {
     }
 
     return client.packages;
+  }
+
+  async remove(id: number): Promise<void> {
+    const client = await this.findOne(id);
+    await this.clientsRepository.remove(client);
   }
 }

@@ -105,10 +105,7 @@ export class UsersService {
    */
   async removeUser(rut: string): Promise<void> {
     const user = await this.findByRut(rut);
-    const result = await this.usersRepository.delete(rut);
-    if (result.affected === 0) {
-      throw new NotFoundException(`User with RUT ${rut} not found`);
-    }
+    await this.usersRepository.remove(user);
     await this.logActivity(user, 'DELETE', 'User deleted');
   }
 
