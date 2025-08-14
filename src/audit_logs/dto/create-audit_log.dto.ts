@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsObject, IsString } from "class-validator";
+import { IsNotEmpty, IsObject, IsOptional, IsString } from "class-validator";
 
 export class CreateAuditLogDto {
     @IsString()
@@ -10,11 +10,10 @@ export class CreateAuditLogDto {
     change_type: string;
 
     @IsObject()
-    previous_data: unknown;
+    @IsOptional()
+    previous_data?: Record<string, unknown>;
 
     @IsObject()
-    new_data: unknown;
-
-    @IsNumber()
-    user_id: number;
+    @IsOptional()
+    new_data?: Record<string, unknown>;
 }

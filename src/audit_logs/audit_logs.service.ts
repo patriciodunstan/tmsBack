@@ -15,7 +15,7 @@ export class AuditLogsService {
   async createAuditLog(createAuditLogDto: CreateAuditLogDto, userId: number) {
     const auditLog = this.auditLogRepository.create({
       ...createAuditLogDto,
-      user: { id: userId },
+      user_id: userId,
     });
     return this.auditLogRepository.save(auditLog);
   }

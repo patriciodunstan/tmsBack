@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Vehicle } from "src/vehicles/entities/vehicle.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('transportista')
 export class Transportista {
@@ -9,5 +10,8 @@ export class Transportista {
     name: string;
     @Column()
     rut: string;
+
+    @OneToMany(() => Vehicle, (vehicle) => vehicle.transportista)
+    vehicles: Vehicle[];
 
 }

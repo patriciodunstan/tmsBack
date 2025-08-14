@@ -1,4 +1,5 @@
 import { Package } from "src/package/entities/package.entity";
+import { Vehicle } from "src/vehicles/entities/vehicle.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('zones')
@@ -32,6 +33,6 @@ export class Zone {
     @OneToMany(() => Package, (pkg) => pkg.zone)
     packages: Package[];
 
-    // @OneToMany(() => Vehicle, vehicle => vehicle.zone)
-    // vehicles: Vehicle[];
+    @OneToMany(() => Vehicle, (vehicle) => vehicle.zone)
+    vehicles: Vehicle[];
 }

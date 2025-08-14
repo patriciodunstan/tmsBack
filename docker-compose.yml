@@ -24,10 +24,10 @@ services:
     ports:
       - '3307:3306'
     environment:
-      - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
-      - MYSQL_DATABASE=${DATABASE_NAME}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
+    - MYSQL_DATABASE=${DATABASE_NAME}
+    - MYSQL_USER=${DATABASE_USER}
+    - MYSQL_PASSWORD=${DATABASE_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d

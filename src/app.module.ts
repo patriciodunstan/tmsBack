@@ -4,6 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UserActivity } from './users/entities/user-activity.entity';
+import { Zone } from './zones/entities/zone.entity';
+import { Client } from './clients/entities/client.entity';
+import { Package } from './package/entities/package.entity';
+import { Order } from './orders/entities/order.entity';
+import { Transportista } from './transportista/entities/transportista.entity';
+import { Vehicle } from './vehicles/entities/vehicle.entity';
+import { AuditLog } from './audit_logs/entities/audit_log.entity';
+import { Rol } from './rols/entities/rol.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ZonesModule } from './zones/zones.module';
 import { ClientsModule } from './clients/clients.module';
@@ -34,7 +42,18 @@ import { RolsModule } from './rols/rols.module';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [User, UserActivity],
+        entities: [
+          User, 
+          UserActivity, 
+          Zone, 
+          Client, 
+          Package, 
+          Order, 
+          Transportista, 
+          Vehicle, 
+          AuditLog, 
+          Rol
+        ],
         synchronize: configService.get('NODE_ENV') === 'development',
       }),
       inject: [ConfigService],

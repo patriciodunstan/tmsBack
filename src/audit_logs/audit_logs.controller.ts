@@ -9,7 +9,9 @@ export class AuditLogsController {
 
   @Post()
   create(@Body() createAuditLogDto: CreateAuditLogDto) {
-    return this.auditLogsService.create(createAuditLogDto);
+    // TODO: Get userId from JWT token in real implementation
+    const userId = 1; // Placeholder
+    return this.auditLogsService.createAuditLog(createAuditLogDto, userId);
   }
 
   @Get()
